@@ -1,3 +1,6 @@
+ [!HOLA AMIG@ 🌷🐼]
+> **Proyecto en desarrollo, esperamos que les guste y les ayude en sus grupos [¡Novedades!](https://whatsapp.com/channel/0029Vb8SQpuDuMReteqMzM2E)**
+
 <p align="center"> 
 <img src="https://files.evogb.win/1aPIAy.jpg" alt="JoNi-Bot-MD" style="width: 75%; height: auto; max-width: 100px;">
 
