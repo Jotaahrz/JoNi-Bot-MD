@@ -419,7 +419,7 @@ if (name != 'owner-unbanchat.js' && name != 'owner-exec.js' && name != 'owner-ex
 if (m.text && user.banned && !isROwner) {
 if (user.antispam > 2) return
 m.reply(`*🚫 Está baneado(a), no puede usar los comandos de este bot!*\n\n${user.bannedReason ? `\n💌 *Motivo:* 
-${user.bannedReason}` : '💌 *Motivo:* Sin Especificar'}\n\n⚠️ *Si cree que es un error contacte con mi creador:*\n- Wa.me/+527713935246`)
+${user.bannedReason}` : '💌 *Motivo:* Sin Especificar'}\n\n⚠️ *Si cree que es un error contacte con mis creadorws*`)
 user.antispam++        
 return
 }
@@ -525,3 +525,108 @@ global.db.data.users[m.sender].spam = new Date * 1
                     if (!isPrems)
                         m.coins = m.coins || plugin.coins || false
                 } catch (e
+                    m.error = e
+                    console.error(e)
+                    if (e) {
+                        let text = format(e)
+                        /*for (let key of Object.values(global.APIKeys))
+                            text = text.replace(new RegExp(key, 'g'), '#HIDDEN#')*/
+                        m.reply(text)
+                    }
+                } finally {
+                    if (typeof plugin.after === 'function') {
+                        try {
+                            await plugin.after.call(this, m, extra)
+                        } catch (e) {
+                            console.error(e)
+                        }
+                    }
+                    if (m.coins)
+                        conn.reply(m.chat, `Utilizaste *${+m.coins}* ${moneda}`, m)
+                }
+                break
+            }
+        }
+    } catch (e) {
+        console.error(e)
+    } finally {
+        if (opts['queque'] && m.text) {
+            const quequeIndex = this.msgqueque.indexOf(m.id || m.key.id)
+            if (quequeIndex !== -1)
+                this.msgqueque.splice(quequeIndex, 1)
+        }
+        let user, stats = global.db.data.stats
+        if (m) {
+            if (m.sender && (user = global.db.data.users[m.sender])) {
+                user.exp += m.exp
+                user.coins -= m.coins * 1
+            }
+
+            let stat
+            if (m.plugin) {
+                let now = +new Date
+                if (m.plugin in stats) {
+                    stat = stats[m.plugin]
+                    if (!isNumber(stat.total))
+                        stat.total = 1
+                    if (!isNumber(stat.success))
+                        stat.success = m.error != null ? 0 : 1
+                    if (!isNumber(stat.last))
+                        stat.last = now
+                    if (!isNumber(stat.lastSuccess))
+                        stat.lastSuccess = m.error != null ? 0 : now
+                } else
+                    stat = stats[m.plugin] = {
+                        total: 1,
+                        success: m.error != null ? 0 : 1,
+                        last: now,
+                        lastSuccess: m.error != null ? 0 : now
+                    }
+                stat.total += 1
+                stat.last = now
+                if (m.error == null) {
+                    stat.success += 1
+                    stat.lastSuccess = now
+                }
+            }
+        }
+
+        try {
+     if (!opts['noprint']) await (await import(`./lib/print.js`)).default(m, this)
+} catch (e) { 
+      console.log(m, m.quoted, e)}
+       let settingsREAD = global.db.data.settings[this.user.jid] || {}  
+      if (opts['autoread']) await this.readMessages([m.key])
+      if (settingsREAD.autoread2) await this.readMessages([m.key])  
+
+     if (db.data.chats[m.chat].reaction && m.text.match(/(ción|navidad|aje|oso|izar|mente|pero|tion|age|ous|ate|and|but|ify|ai|adow|a|s)/gi)) {
+         let emot = pickRandom(["🍟", "😃", "😄", "😁", "😆", "🍓", "😅", "😂", "🤣", "🥲", "☺️", "😊", "😇", "🙂", "🙃", "😉", "😌", "😍", "🥰", "😘", "😗", "😙", "🌺", "🌸", "😚", "😋", "😛", "😝", "😜", "🤪", "🤨", "🌟", "🤓", "😎", "🥸", "🤩", "🥳", "😏", "💫", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣", "😖", "😫", "😩", "🥺", "😢", "😭", "😤", "😠", "😡", "🤬", "🤯", "😳", "🥵", "🥶", "😶‍🌫️", "😱", "😨", "😰", "😥", "😓", "🤗", "🤔", "🫣", "🤭", "🤖", "🍭", "🤫", "🫠", "🤥", "😶", "📇", "😐", "💧", "😑", "🫨", "😬", "🙄", "😯", "😦", "😧", "😮", "😲", "🥱", "😴", "🤤", "😪", "😮‍💨", "😵", "😵‍💫", "🤐", "🥴", "🤢", "🤮", "🤧", "😷", "🤒", "🤕", "🤑", "🤠", "😈", "👿", "👺", "🧿", "🌩", "👻", "😺", "😸", "😹", "😻", "😼", "😽", "🙀", "😿", "😾", "🫶", "👍", "✌️", "🙏", "🫵", "🤏", "🤌", "☝️", "🖕", "🙏", "🫵", "🫂", "🐱", "🤹‍♀️", "🤹‍♂️", "🗿", "✨", "⚡", "🔥", "🌈", "🩷", "❤️", "🧡", "💛", "💚", "🩵", "💙", "💜", "🖤", "🩶", "🤍", "🤎", "💔", "❤️‍🔥", "❤️‍🩹", "❣️", "💕", "💞", "💓", "💗", "💖", "💘", "💝", "🚩", "👊", "⚡️", "💋", "🫰", "💅", "👑", "🐣", "🐤", "🐈"])
+       if (!m.fromMe) return this.sendMessage(m.chat, { react: { text: emot, key: m.key }})
+       }
+     function pickRandom(list) { return list[Math.floor(Math.random() * list.length)]}
+       }}
+
+global.dfail = (type, m, conn) => {
+
+let user2 = m.pushName || 'Anónimo'
+const msg = {
+rowner: `*${emoji} Esta función solo puede ser usada por el actual Owner.*`, 
+owner: `*${emoji} Esta función solo puede ser usada por mi Desarrollador.*`, 
+mods: `*${emoji} Esta función solo puede ser usada los moderadores del bot.*`, 
+premium: `*${emoji} Esta función solo es para usuarios Premium.*`, 
+group: `*${emoji} Esta funcion solo puede ser ejecutada en Grupos.*`, 
+private: `*${emoji} Esta función solo puede ser ejecutada en chat privado.*`, 
+admin: `*${emoji} este comando solo puede ser usado por admins.*`, 
+botAdmin: `*${emoji} Para usar esta función debo ser Admin.*`,
+unreg: `*${emoji} \`${botname}\` te avisa que no te encuentras registrado para usar esta función en el bot.*\n\nPara verificar utiliza .reg nombre.edad
+> Ejemplo: .reg ${namebot}.21`,
+restrict: `*${emoji} Esta característica esta desactivada.*`
+}[type];
+if (msg) return conn.reply(m.chat, msg, m).then(_ => m.react('✖️'))}
+
+let file = global.__filename(import.meta.url, true)
+watchFile(file, async () => {
+    unwatchFile(file)
+    console.log(chalk.magenta("Se actualizo 'handler.js'"))
+    if (global.reloadHandler) console.log(await global.reloadHandler())
+})
