@@ -1,5 +1,5 @@
 {
-"name": "Bot",
+"name": "JoNi Bot",
 "version": "2.1.0",
 "description": "WhatsApp Bot Multi Device",
 "main": "main.js",
@@ -18,16 +18,16 @@
 "eslint": "eslint .",
 "eslintfix": "eslint --fix ."
 },
-"homepage": "https://github.com/Jotaahrz/Bot-MD",
+"homepage": "https://github.com/Jotaahrz/JoNi-Bot-MD",
 "author": {
 "name": "Jotaahrz"
 },
 "repository": {
 "type": "git",
-"url": "git+https://github.com/Jotaahrz/Bot-MD.git"
+"url": "git+https://github.com/Jotaahrz/JoNi-Bot-MD.git"
 },
 "bugs": {
-"url": "https://github.com/Jotaahrz/Bot-MD/issues"
+"url": "https://github.com/Jotaahrz/JoNi-Bot-MD/issues"
 },
 "license": "GPL-3.0-or-later",
 "dependencies": {
