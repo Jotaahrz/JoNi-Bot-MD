@@ -1,4 +1,4 @@
-> [!HOLA AMIG@ 🌷🐼]
+> [!HOLA AMIG@]
 > **Proyecto en desarrollo, esperamos que les guste y les ayude en sus grupos [¡Novedades!](https://whatsapp.com/channel/0029Vb8SQpuDuMReteqMzM2E)**
 
 <p align="center"> 
