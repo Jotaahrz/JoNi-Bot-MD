@@ -4,6 +4,11 @@
 <p align="center"> 
 <img src="https://files.evogb.win/1aPIAy.jpg" alt="JoNi-Bot-MD" style="width: 75%; height: auto; max-width: 100px;">
 
+<p align="center"> 
+<a href="#"><img title="JoNi-Bot-MD" src="https://img.shields.io/badge/¡Disfruta de un Bot totalmente gratuito, con múltiples funciones y de código abierto! -blue?colorA=%23007BFF&colorB=%23001466&style=for-the-badge"></a> 
+</p>
+<div align="center">
+
 <div align="center">
 
 [![WhatsApp](https://img.shields.io/badge/Jota-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://wa.me/573155227977)
