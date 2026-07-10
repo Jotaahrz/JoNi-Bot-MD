@@ -26,6 +26,9 @@ global.textmain2 = 'JaNi Bot MD'
 global.sessions = 'JaNiSession'
 global.jadi = 'JadiBots'
 
+
+global.catalogo = fs.readFileSync('./media/catalogo.jpg')
+
 global.cheerio = cheerio
 global.fs = fs
 global.fetch = fetch
