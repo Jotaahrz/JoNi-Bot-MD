@@ -16,14 +16,14 @@ global.creator = ['573155227977',
                   '573248105417',
 ]
 
-global.botname = 'JaNi Bot'
+global.botname = 'JoNi Bot'
 global.dev = 'by Jota x Nicky'
 global.errorm = 'Error: ${error.message}'
-global.namebot = 'JaNi Bot'
-global.textmain = 'JaNi Bot'
-global.textmain2 = 'JaNi Bot MD'
+global.namebot = 'JoNi Bot'
+global.textmain = 'JoNi Bot'
+global.textmain2 = 'JoNi Bot MD'
 
-global.sessions = 'JaNiSession'
+global.sessions = 'JoNiSession'
 global.jadi = 'JadiBots'
 
 
