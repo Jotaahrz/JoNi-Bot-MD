@@ -73,6 +73,12 @@ export async function handler(chatUpdate) {
                     user.bank = 0
                 if (!isNumber(user.warn))
                     user.warn = 0
+                if (!isNumber(user.lastseen))
+                    user.lastseen = Date.now()
+                if (!('whitelist' in user))
+                    user.whitelist = false
+                if (!isNumber(user.chat))
+                    user.chat = 0
             } else
                 global.db.data.users[m.sender] = {
                     exp: 0,
@@ -92,6 +98,9 @@ export async function handler(chatUpdate) {
                     role: 'Novato',
                     premium: false,
                     premiumTime: 0,
+                    lastseen: Date.now(),
+                    whitelist: false,
+                    chat: 0,
                 }
             let chat = global.db.data.chats[m.chat]
             if (typeof chat !== 'object')
@@ -147,6 +156,12 @@ export async function handler(chatUpdate) {
                     chat.expired = 0
                 if (!('modoadmin' in chat))
                     chat.modoadmin = false
+                if (!('customWelcome' in chat))
+                    chat.customWelcome = null
+                if (!('customBye' in chat))
+                    chat.customBye = null
+                if (!('warns' in chat))
+                    chat.warns = {}
             } else
                 global.db.data.chats[m.chat] = {
                     isBanned: false,
@@ -174,6 +189,9 @@ export async function handler(chatUpdate) {
                     reaction: false,
                     expired: 0,
                     modoadmin: false,
+                    customWelcome: null,
+                    customBye: null,
+                    warns: {},
                 }
             var settings = global.db.data.settings[this.user.jid]
             if (typeof settings !== 'object') global.db.data.settings[this.user.jid] = {}
@@ -207,7 +225,6 @@ export async function handler(chatUpdate) {
 
         let _user = global.db.data?.users?.[m.sender]
 
-        // Detectar si el bot está usando lid o no
         const detectwhat = m.sender.includes('@lid') ? '@lid' : '@s.whatsapp.net'
 
         const isROwner = [...global.owner.map(([number]) => number)].map(v => v.replace(/[^0-9]/g, '') + detectwhat).includes(m.sender)
@@ -232,7 +249,6 @@ export async function handler(chatUpdate) {
 
         let usedPrefix
 
-        // Obtener datos del grupo
         const groupMetadata = m.isGroup
             ? await conn.groupMetadata(m.chat).catch(_ => null)
             : {}
@@ -252,7 +268,6 @@ export async function handler(chatUpdate) {
         const isAdmin = isRAdmin || user.admin === 'admin'
         const isBotAdmin = bot.admin === 'admin' || bot.admin === 'superadmin'
 
-        // Detecta si es Business o Canal
         m.isWABusiness = ['smba', 'smbi'].includes(global.conn.authState?.creds?.platform)
         m.isChannel = m.chat.includes('@newsletter') || m.sender.includes('@newsletter')
 
@@ -352,7 +367,6 @@ ${user.bannedReason}` : '💌 *Motivo:* Sin Especificar'}\n\n⚠️ *Si cree que
                         return
                     }
 
-                    // Modo Admin
                     let hl = global.prefix
                     let adminMode = chat.modoadmin
                     let isPotentialCommand = plugin.botAdmin || plugin.admin || plugin.group || plugin || noPrefix || hl || m.text.slice(0, 1) == hl || plugin.command
@@ -481,6 +495,8 @@ ${user.bannedReason}` : '💌 *Motivo:* Sin Especificar'}\n\n⚠️ *Si cree que
             if (m.sender && (user = global.db.data.users[m.sender])) {
                 user.exp += m.exp
                 user.coins -= m.coins * 1
+                user.lastseen = Date.now()
+                user.chat = (user.chat || 0) + 1
             }
 
             let stat
