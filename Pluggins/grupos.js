@@ -3,7 +3,6 @@ import { join } from 'path';
 
 const handler = async (m, { isOwner, isAdmin, conn, participants, args, command }) => {
   try {
-    const chat = global.db.data?.chats?.[m.chat] || {};
     if (!(isAdmin || isOwner)) {
       global.dfail('admin', m, conn);
       return;
@@ -41,29 +40,19 @@ const handler = async (m, { isOwner, isAdmin, conn, participants, args, command 
     let messageText = `╔═❖ *${groupName}* ❖═╗\n\n👥 Integrantes: ${participants.length}\n📝 Mensaje: ${customMessage}\n\n`;
 
     if (/2$/i.test(command)) {
-      // Estilo con banderas
-      const grouped = {};
-      for (const mem of participants) {
-        const flag = getCountryFlag(mem);
-        if (!grouped[flag]) grouped[flag] = [];
-        grouped[flag].push(mem);
-      }
-
-      for (const [flag, members] of Object.entries(grouped)) {
-        messageText += `\n${flag} ─────────────\n`;
-        for (const mem of members) {
-          const realJid = mem.jid || mem.id || '';
-          const displayNumber = realJid.split('@')[0];
-          messageText += `◈ @${displayNumber}\n`;
-        }
-      }
-    } else {
-      // Estilo fijo 🌷🐼
-      messageText += `\n🌷🐼 ─────────────\n`;
+      // Estilo con bandera al inicio de cada mención
       for (const mem of participants) {
         const realJid = mem.jid || mem.id || '';
         const displayNumber = realJid.split('@')[0];
-        messageText += `◈ @${displayNumber}\n`;
+        const flag = getCountryFlag(mem);
+        messageText += `${flag} @${displayNumber}\n`;
+      }
+    } else {
+      // Estilo fijo 🌷🐼
+      for (const mem of participants) {
+        const realJid = mem.jid || mem.id || '';
+        const displayNumber = realJid.split('@')[0];
+        messageText += `🌷🐼 @${displayNumber}\n`;
       }
     }
 
@@ -81,7 +70,7 @@ const handler = async (m, { isOwner, isAdmin, conn, participants, args, command 
 };
 
 handler.help = ['todos','todos2'];
-handler.tags = ['grupos'];
+handler.tags = ['group'];
 handler.command = /^(tagall|t|todos|tagall2|t2|todos2)$/i;
 handler.admin = true;
 handler.group = true;
