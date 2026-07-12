@@ -1,3 +1,4 @@
+// index.js
 import { join, dirname } from 'path';
 import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
@@ -21,7 +22,7 @@ say('JoNi\nBot', {
   align: 'center',
   gradient: ['red', 'magenta']
 });
-say(`by\nJotaa x Nicky}`, {
+say(`by\nJota x Nicky`, {
   font: 'console',
   align: 'center',
   gradient: ['red', 'magenta']
@@ -77,6 +78,7 @@ function start(file) {
   }
 }
 
+// ========== MANEJO DE ADVERTENCIAS ==========
 process.on('warning', (warning) => {
   if (warning.name === 'MaxListenersExceededWarning') {
     console.warn('🔴 Se excedió el límite de Listeners en:');
@@ -84,4 +86,15 @@ process.on('warning', (warning) => {
   }
 });
 
+// ========== MANEJO DE PROMESAS RECHAZADAS ==========
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('🔴 Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+// ========== MANEJO DE EXCEPCIONES NO CAPTURADAS ==========
+process.on('uncaughtException', (error) => {
+  console.error('🔴 Uncaught Exception:', error);
+});
+
+// ========== INICIO DEL BOT ==========
 start('main.js');
