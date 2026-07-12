@@ -77,7 +77,7 @@ Comandos disponibles:`,
     await conn.sendMessage(m.chat, {
       image: { url: img },
       caption: menuText,
-      mentions: [m.sender, creadorM]
+      mentions: [m.sender]
     }, { quoted: fkontak })
 
   } catch (e) {
