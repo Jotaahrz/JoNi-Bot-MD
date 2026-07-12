@@ -1,3 +1,4 @@
+// handler.js
 import { smsg } from './lib/simple.js'
 import { format } from 'util'
 import { fileURLToPath } from 'url'
@@ -144,6 +145,8 @@ export async function handler(chatUpdate) {
                     chat.delete = false
                 if (!isNumber(chat.expired))
                     chat.expired = 0
+                if (!('modoadmin' in chat))
+                    chat.modoadmin = false
             } else
                 global.db.data.chats[m.chat] = {
                     isBanned: false,
@@ -170,6 +173,7 @@ export async function handler(chatUpdate) {
                     nsfw: false,
                     reaction: false,
                     expired: 0,
+                    modoadmin: false,
                 }
             var settings = global.db.data.settings[this.user.jid]
             if (typeof settings !== 'object') global.db.data.settings[this.user.jid] = {}
@@ -201,7 +205,7 @@ export async function handler(chatUpdate) {
         if (typeof m.text !== 'string')
             m.text = ''
 
-        let _user = global.db.data?.users?.[m.sender]  // ✅ Solo una vez
+        let _user = global.db.data?.users?.[m.sender]
 
         // Detectar si el bot está usando lid o no
         const detectwhat = m.sender.includes('@lid') ? '@lid' : '@s.whatsapp.net'
@@ -209,6 +213,7 @@ export async function handler(chatUpdate) {
         const isROwner = [...global.owner.map(([number]) => number)].map(v => v.replace(/[^0-9]/g, '') + detectwhat).includes(m.sender)
         const isOwner = isROwner || m.fromMe
         const isPrems = isROwner || _user?.premiumTime > 0
+        const isMods = isROwner || false
 
         if (!isOwner && opts['self']) return
 
@@ -225,7 +230,7 @@ export async function handler(chatUpdate) {
         if (m.isBaileys) return
         m.exp += Math.ceil(Math.random() * 10)
 
-        let usedPrefix // Puedes definirlo luego
+        let usedPrefix
 
         // Obtener datos del grupo
         const groupMetadata = m.isGroup
@@ -251,83 +256,6 @@ export async function handler(chatUpdate) {
         m.isWABusiness = ['smba', 'smbi'].includes(global.conn.authState?.creds?.platform)
         m.isChannel = m.chat.includes('@newsletter') || m.sender.includes('@newsletter')
 
-        /*
-        if (opts['nyimak']) return
-        if (!m.fromMe && opts['self']) return
-        if (opts['swonly'] && m.chat !== 'status@broadcast') return
-        if (typeof m.text !== 'string') m.text = ''
-        
-        // ✅ Datos del usuario en DB
-        let _user = global.db.data?.users?.[m.sender]
-        
-        // 🔍 Normalizar número y detectar si es LID o JID
-        const cleanSender = m.sender.replace(/[^0-9]/g, '')
-        const senderType = m.sender.includes('@lid') ? '@lid' : '@s.whatsapp.net'
-        
-        // 🔑 Propietarios
-        const isROwner = global.owner
-          .map(([num]) => num.replace(/[^0-9]/g, ''))
-          .some(n => [`${n}@s.whatsapp.net`, `${n}@lid`].includes(m.sender))
-        
-        const isOwner = isROwner || m.fromMe
-        const isPrems = isROwner || _user?.premiumTime > 0
-        
-        if (!isOwner && opts['self']) return
-        
-        // 🕒 Cola de mensajes
-        if (opts['queque'] && m.text && !(isMods || isPrems)) {
-          let queque = this.msgqueque
-          const time = 5000
-          const prevID = queque[queque.length - 1]
-          queque.push(m.id || m.key.id)
-        
-          if (prevID) {
-            await new Promise(resolve => {
-              let check = setInterval(() => {
-                if (!queque.includes(prevID)) {
-                  clearInterval(check)
-                  resolve()
-                }
-              }, time)
-            })
-          }
-        }
-        
-        // ❌ Ignorar mensajes internos de Baileys
-        if (m.isBaileys) return
-        
-        // 🎲 Experiencia
-        m.exp += Math.ceil(Math.random() * 10)
-        
-        let usedPrefix // lo defines luego
-        
-        // 📌 Obtener datos del grupo (con caché opcional)
-        let groupMetadata = {}
-        let participants = []
-        if (m.isGroup) {
-          groupMetadata = await (this.groupMetadataCache?.[m.chat] 
-            || conn.groupMetadata(m.chat).catch(_ => null) || {})
-          participants = groupMetadata.participants || []
-        }
-        
-        // 🔍 Función para buscar participante (jid o lid)
-        function findParticipant(jid) {
-          return participants.find(p => p.jid === jid || p.lid === jid.split('@')[0]) || {}
-        }
-        
-        const user = findParticipant(m.sender)
-        const bot  = findParticipant(conn.user?.jid)
-        
-        // 👑 Admins
-        const isRAdmin = user.admin === 'superadmin'
-        const isAdmin = isRAdmin || user.admin === 'admin'
-        const isBotAdmin = ['admin', 'superadmin'].includes(bot.admin)
-        
-        // 🏢 Detectar Business y Canales
-        m.isWABusiness = /smb[ai]/.test(global.conn.authState?.creds?.platform || '')
-        m.isChannel = /@newsletter$/.test(m.chat) || /@newsletter$/.test(m.sender)
-        
-        */
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins')
         for (let name in global.plugins) {
             let plugin = global.plugins[name]
@@ -414,30 +342,25 @@ export async function handler(chatUpdate) {
                 if (m.chat in global.db.data.chats || m.sender in global.db.data.users) {
                     let chat = global.db.data.chats[m.chat]
                     let user = global.db.data.users[m.sender]
-                    if (!['owner-unbanchat.js'].includes(name) && chat && chat.isBanned && !isROwner) return // Except this
+                    if (!['owner-unbanchat.js'].includes(name) && chat && chat.isBanned && !isROwner) return
                     if (name != 'owner-unbanchat.js' && name != 'owner-exec.js' && name != 'owner-exec2.js' && name != 'tool-delete.js' && chat?.isBanned && !isROwner) return
                     if (m.text && user.banned && !isROwner) {
                         if (user.antispam > 2) return
                         m.reply(`*🚫 Está baneado(a), no puede usar los comandos de este bot!*\n\n${user.bannedReason ? `\n💌 *Motivo:* 
-${user.bannedReason}` : '💌 *Motivo:* Sin Especificar'}\n\n⚠️ *Si cree que es un error contacte con mis creadorws*`)
+${user.bannedReason}` : '💌 *Motivo:* Sin Especificar'}\n\n⚠️ *Si cree que es un error contacte con mis creadores*`)
                         user.antispam++
                         return
                     }
 
-                    //Modoadmin
+                    // Modo Admin
                     let hl = global.prefix
                     let adminMode = chat.modoadmin
-                    let isPotentialCommand = plugins.botAdmin || plugins.admin || plugins.group || plugins || noPrefix || hl || m.text.slice(0, 1) == hl || plugins.command
+                    let isPotentialCommand = plugin.botAdmin || plugin.admin || plugin.group || plugin || noPrefix || hl || m.text.slice(0, 1) == hl || plugin.command
 
                     if (adminMode && !isOwner && !isROwner && m.isGroup && !isAdmin && isPotentialCommand) continue
 
-                    //Antispam 2                
-                    /*if (user.antispam2 && isROwner) return
-                    let time = global.db.data.users[m.sender].spam + 3000
-                    if (new Date - global.db.data.users[m.sender].spam < 3000) return console.log(`[ SPAM ]`)*/
                     global.db.data.users[m.sender].spam = new Date * 1
                 }
-                //  m.plugin = name
                 if (m.chat in global.db.data.chats || m.sender in global.db.data.users) {
                     let chat = global.db.data.chats[m.chat]
                     let user = global.db.data.users[m.sender]
@@ -494,7 +417,7 @@ ${user.bannedReason}` : '💌 *Motivo:* Sin Especificar'}\n\n⚠️ *Si cree que
                 else
                     m.exp += xp
                 if (!isPrems && plugin.coins && global.db.data.users[m.sender].coins < plugin.coins * 1) {
-                    conn.reply(m.chat, `*Se agotaron tus ${moneda}*`, m)
+                    conn.reply(m.chat, `*Se agotaron tus ${global.moneda || '🪙'}*`, m)
                     continue
                 }
                 let extra = {
@@ -529,8 +452,6 @@ ${user.bannedReason}` : '💌 *Motivo:* Sin Especificar'}\n\n⚠️ *Si cree que
                     console.error(e)
                     if (e) {
                         let text = format(e)
-                        /*for (let key of Object.values(global.APIKeys))
-                            text = text.replace(new RegExp(key, 'g'), '#HIDDEN#')*/
                         m.reply(text)
                     }
                 } finally {
@@ -542,7 +463,7 @@ ${user.bannedReason}` : '💌 *Motivo:* Sin Especificar'}\n\n⚠️ *Si cree que
                         }
                     }
                     if (m.coins)
-                        conn.reply(m.chat, `Utilizaste *${+m.coins}* ${moneda}`, m)
+                        conn.reply(m.chat, `Utilizaste *${+m.coins}* ${global.moneda || '🪙'}`, m)
                 }
                 break
             }
@@ -608,28 +529,27 @@ ${user.bannedReason}` : '💌 *Motivo:* Sin Especificar'}\n\n⚠️ *Si cree que
     }
 }
 
+// ========== MENSAJES DE ERROR GLOBALES ==========
 global.dfail = (type, m, conn) => {
-
-    let user2 = m.pushName || 'Anónimo'
     const msg = {
-        rowner: `*${emoji} Esta función solo puede ser usada por el actual Owner.*`,
-        owner: `*${emoji} Esta función solo puede ser usada por mi Desarrollador.*`,
-        mods: `*${emoji} Esta función solo puede ser usada los moderadores del bot.*`,
-        premium: `*${emoji} Esta función solo es para usuarios Premium.*`,
-        group: `*${emoji} Esta funcion solo puede ser ejecutada en Grupos.*`,
-        private: `*${emoji} Esta función solo puede ser ejecutada en chat privado.*`,
-        admin: `*${emoji} este comando solo puede ser usado por admins.*`,
-        botAdmin: `*${emoji} Para usar esta función debo ser Admin.*`,
-        unreg: `*${emoji} \`${botname}\` te avisa que no te encuentras registrado para usar esta función en el bot.*\n\nPara verificar utiliza .reg nombre.edad
-> Ejemplo: .reg ${namebot}.21`,
-        restrict: `*${emoji} Esta característica esta desactivada.*`
+        rowner: `*${global.emoji || '⚠️'} Esta función solo puede ser usada por el actual Owner.*`,
+        owner: `*${global.emoji || '⚠️'} Esta función solo puede ser usada por mi Desarrollador.*`,
+        mods: `*${global.emoji || '⚠️'} Esta función solo puede ser usada por los moderadores del bot.*`,
+        premium: `*⭐ Esta función solo es para usuarios Premium.*`,
+        group: `*${global.emoji || '⚠️'} Esta función solo puede ser ejecutada en Grupos.*`,
+        private: `*${global.emoji || '⚠️'} Esta función solo puede ser ejecutada en chat privado.*`,
+        admin: `*${global.emoji || '⚠️'} Este comando solo puede ser usado por admins.*`,
+        botAdmin: `*${global.emoji || '⚠️'} Para usar esta función debo ser Admin.*`,
+        unreg: `*${global.emoji || '⚠️'} \`${global.botname || 'Bot'}\` te avisa que no te encuentras registrado para usar esta función en el bot.*\n\nPara verificar utiliza .reg nombre.edad\n> Ejemplo: .reg ${global.namebot || 'Bot'}.21`,
+        restrict: `*${global.emoji || '⚠️'} Esta característica está desactivada.*`
     }[type];
     if (msg) return conn.reply(m.chat, msg, m).then(_ => m.react('✖️'))
 }
 
+// ========== WATCH FILE ==========
 let file = global.__filename(import.meta.url, true)
 watchFile(file, async () => {
     unwatchFile(file)
-    console.log(chalk.magenta("Se actualizo 'handler.js'"))
+    console.log(chalk.magenta("Se actualizó 'handler.js'"))
     if (global.reloadHandler) console.log(await global.reloadHandler())
 })
