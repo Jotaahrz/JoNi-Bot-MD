@@ -34,6 +34,7 @@ global.jadi = 'JadiBots'
 // ========== EMOJIS GLOBALES ==========
 global.emojis = '✅'      // Para mensajes de éxito
 global.emoji = '⚠️'       // Para mensajes de advertencia
+global.emotg = '👻'       // Para fantasmas
 global.moneda = '🪙'      // Moneda del bot
 
 // ========== MULTIMEDIA ==========
@@ -66,9 +67,9 @@ global.message = {
 
 // ========== CONFIGURACIÓN DE ADMINISTRACIÓN ==========
 global.admin = {
-  allowKickOwner: false,  // ¿Permitir eliminar al creador?
-  allowSelfKick: false,   // ¿Permitir auto-expulsión?
-  logKicks: true,         // ¿Registrar expulsiones?
+  allowKickOwner: false,
+  allowSelfKick: false,
+  logKicks: true,
   kickMessage: '👋 El usuario {user} fue eliminado del grupo por {admin}'
 }
 
