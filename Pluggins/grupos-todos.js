@@ -70,7 +70,7 @@ const handler = async (m, { isOwner, isAdmin, conn, participants, args, command 
 };
 
 handler.help = ['todos','todos2'];
-handler.tags = ['group'];
+handler.tags = ['grupos'];
 handler.command = /^(tagall|t|todos|tagall2|t2|todos2)$/i;
 handler.admin = true;
 handler.group = true;
