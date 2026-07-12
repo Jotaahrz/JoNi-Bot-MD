@@ -38,13 +38,13 @@ serialize()
 
 // ========== FUNCIONES GLOBALES ==========
 global.__filename = function filename(pathURL = import.meta.url, rmPrefix = platform !== 'win32') {
-  return rmPrefix ? /file:\/\/\//.test(pathURL) ? fileURLToPath(pathURL) : pathURL : pathToFileURL(pathURL).toString();
+  return rmPrefix ? /file:\/\/\//.test(pathURL) ? fileURLToPath(pathURL) : pathURL : pathToFileURL(pathURL).toString()
 }
 global.__dirname = function dirname(pathURL) {
-  return path.dirname(global.__filename(pathURL, true));
+  return path.dirname(global.__filename(pathURL, true))
 }
 global.__require = function require(dir = import.meta.url) {
-  return createRequire(dir);
+  return createRequire(dir)
 }
 
 global.API = (name, path = '/', query = {}, apikeyqueryname) => (name in global.APIs ? global.APIs[name] : name) + path + (query || apikeyqueryname ? '?' + new URLSearchParams(Object.entries({ ...query, ...(apikeyqueryname ? { [apikeyqueryname]: global.APIKeys[name in global.APIs ? global.APIs[name] : name] } : {}) })) : '')
@@ -362,7 +362,7 @@ global.reloadHandler = async function (restatConn) {
 }
 
 // ========== CARGA DE PLUGINS ==========
-const pluginFolder = global.__dirname(join(__dirname, './Pluggins/index'))
+const pluginFolder = global.__dirname(join(__dirname, './plugins'))
 const pluginFilter = (filename) => /\.js$/.test(filename)
 global.plugins = {}
 
@@ -540,13 +540,13 @@ setInterval(async () => {
   if (stopped === 'close' || !conn || !conn.user) return
   await clearTmp()
   console.log(chalk.bold.cyanBright(`\n╭» 🟢 MULTIMEDIA 🟢\n│→ ARCHIVOS DE LA CARPETA TMP ELIMINADAS\n╰― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― 🗑️♻️`))
-}, 1000 * 60 * 4) // 4 minutos
+}, 1000 * 60 * 4)
 
 setInterval(async () => {
   if (stopped === 'close' || !conn || !conn.user) return
   await purgeOldFiles()
   console.log(chalk.bold.cyanBright(`\n╭» 🟠 ARCHIVOS 🟠\n│→ ARCHIVOS RESIDUALES ELIMINADAS\n╰― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― 🗑️♻️`))
-}, 1000 * 60 * 10) // 10 minutos
+}, 1000 * 60 * 10)
 
 _quickTest().then(() => conn.logger.info(chalk.bold(`🤍  H E C H O\n`.trim()))).catch(console.error)
 
