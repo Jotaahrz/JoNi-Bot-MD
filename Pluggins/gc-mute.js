@@ -40,7 +40,7 @@ const before = async (m, { conn }) => {
 
 handler.command = /^(mute|unmute)$/i;
 handler.tags = ['grupos']
-handler.help ['mute','unmute']
+handler.help = ['mute','unmute']
 handler.group = true;
 handler.admin = true;
 handler.before = before;
