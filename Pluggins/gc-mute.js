@@ -4,12 +4,12 @@ const mutedUsers = new Set();
 const handler = async (m, { conn, command }) => {
   if (!m.isGroup) return conn.reply(m.chat, global.message.error.notGroup, m);
 
-  // Obtener el target: primero mención, luego respuesta
   const target = m.mentionedJid[0] || (m.quoted ? m.quoted.sender : null);
   if (!target) return conn.reply(m.chat, '⚠️ *Debes mencionar o responder a alguien.*', m);
 
-  // Validar que no sea el bot ni los owners
-  const isOwner = global.owner.some(o => target.includes(o[0]));
+  const isOwner = Array.isArray(global.owner) 
+    ? global.owner.some(o => target.includes(o)) 
+    : false;
   const isBot = target === conn.user.jid;
   if (isOwner || isBot) {
     return conn.reply(m.chat, '⚠️ *No puedes mutear al propietario del bot*', m);
@@ -29,18 +29,21 @@ const handler = async (m, { conn, command }) => {
   }
 };
 
-// Middleware para borrar mensajes de muteados
 const before = async (m, { conn }) => {
   if (mutedUsers.has(m.sender)) {
-    await conn.sendMessage(m.chat, { delete: m.key });
+    try {
+      await conn.sendMessage(m.chat, { delete: m.key });
+    } catch (e) {
+      console.error('Error al borrar mensaje:', e);
+    }
     return true;
   }
   return false;
 };
 
 handler.command = /^(mute|unmute)$/i;
-handler.tags = ['grupos']
-handler.help = ['mute','unmute']
+handler.tags = ['grupos'];
+handler.help = ['mute','unmute'];
 handler.group = true;
 handler.admin = true;
 handler.before = before;
