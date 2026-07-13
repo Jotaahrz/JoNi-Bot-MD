@@ -8,7 +8,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     await conn.groupSettingUpdate(m.chat, isClose)
 }
 handler.help = ['gupo abrir', 'grupo cerrar']
-handler.tags = ['gc']
+handler.tags = ['grupos']
 handler.command = ['group', 'grupo'] 
 handler.admin = true
 handler.botAdmin = true
