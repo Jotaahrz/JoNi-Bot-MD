@@ -34,7 +34,7 @@ let handler = async (m, { conn, participants }) => {
 };
 
 handler.help = ['ruletaban'];
-handler.tags = ['gc'];
+handler.tags = ['grupos'];
 handler.command = /^(kickrandom|ruletaban|rban)$/i;
 handler.admin = true;
 handler.botAdmin = true;
