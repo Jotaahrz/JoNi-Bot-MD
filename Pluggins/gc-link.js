@@ -6,9 +6,8 @@ conn.reply(m.chat, '🔗\v' + link, m, { detectLink: true })
 
 }
 handler.help = ['link']
-handler.tags = ['gc']
+handler.tags = ['grupos']
 handler.command = ['link','linkgroup']
-
 handler.group = true
 handler.botAdmin = true
 
