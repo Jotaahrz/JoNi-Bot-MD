@@ -18,7 +18,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   m.reply('✅ Mensaje de despedida actualizado correctamente.')
 }
 handler.help = ['setbye <texto>']
-handler.tags = ['grupo']
+handler.tags = ['grupos']
 handler.command = /^setbye$/i
 handler.admin = true
 handler.group = true
