@@ -18,7 +18,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   m.reply('✅ Mensaje de bienvenida actualizado correctamente.')
 }
 handler.help = ['setwelcome <texto>']
-handler.tags = ['grupo']
+handler.tags = ['grupos']
 handler.command = /^setwelcome$/i
 handler.admin = true
 handler.group = true
