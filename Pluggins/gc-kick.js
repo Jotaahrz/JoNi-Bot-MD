@@ -1,34 +1,29 @@
-let handler = async (m, { conn, args, participants }) => {
+let handler = async (m, { conn, participants, usedPrefix, command }) => {
+    let mentionedJid = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted ? m.quoted.sender : null
 
-  let target
+    if (!mentionedJid) return conn.reply(m.chat, `🌷🐼 Debes mencionar a un usuario o responder a un mensaje para poder expulsarlo.`, m)
 
-  if (m.quoted) {
-    target = m.quoted.sender
-  } else if (args[0]) {
-    let mentioned = args[0].replace(/[@+]/g, '') + '@s.whatsapp.net'
-    target = mentioned
-  } else {
-    return conn.reply(m.chat, '*Debes mencionar o responder a alguien 👤*', m)
-  }
+    try {
+        let groupMetadata = await conn.groupMetadata(m.chat)
+        let ownerGroup = groupMetadata.owner || m.chat.split`-`[0] + '@s.whatsapp.net'
+        let ownerBot = global.owner[0][0] + '@s.whatsapp.net'
 
-  let exists = participants.find(p => p.id === target)
-  if (!exists) {
-    return conn.reply(m.chat, '*Ese usuario no está en el grupo* ⚠️', m)
-  }
+        if (mentionedJid === conn.user.jid) return conn.reply(m.chat, `😒 No puedo eliminarme a mí mismo.`, m)
+        if (mentionedJid === ownerGroup) return conn.reply(m.chat, `👑 No puedo eliminar al propietario del grupo.`, m)
+        if (mentionedJid === ownerBot) return conn.reply(m.chat, `🐼🌷 No puedo eliminar al dueño del bot.`, m)
 
-  await conn.reply(m.chat, `👢 *Expulsando a* @${target.split('@')[0]}...`, m, {
-    mentions: [target]
-  })
-
-  try {
-    await conn.groupParticipantsUpdate(m.chat, [target], 'remove')
-  } catch (e) {
-    conn.reply(m.chat, 'No pude expulsar al usuario, revisa permisos ⚠️', m)
-  }
+        await conn.groupParticipantsUpdate(m.chat, [mentionedJid], 'remove')
+        conn.reply(m.chat, `✅ *Usuario expulsado*`, m)
+    } catch (e) {
+        conn.reply(m.chat, `❌ Se ha producido un problema.\n> *Error:* ${e.message}`, m)
+    }
 }
 
-handler.command = ['kick', 'sacar','ban']
-handler.tags = ['grupos']
 handler.help = ['kick']
+handler.tags = ['grupos']
+handler.command = ['kick', 'echar', 'hechar', 'sacar', 'ban']
 handler.admin = true
+handler.group = true
+handler.botAdmin = true
+
 export default handler
