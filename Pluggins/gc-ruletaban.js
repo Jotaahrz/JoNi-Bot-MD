@@ -1,42 +1,28 @@
 let handler = async (m, { conn, participants }) => {
-  const botId = conn.user.jid;
+  // Filtrar solo usuarios válidos (no el bot ni administradores si quieres)
+  let users = participants.filter(p => !p.admin && p.id !== conn.user.jid).map(p => p.id)
 
-  const admins = participants.filter(p => p.admin);
-  const eligibleUsers = participants.filter(p => !p.admin && p.id !== botId);
-
-  if (eligibleUsers.length === 0) {
-    return m.reply('*⚠️ No hay miembros para eliminar.*');
+  if (users.length === 0) {
+    return conn.reply(m.chat, 'No hay usuarios disponibles para eliminar 🎯', m)
   }
 
-  if (participants.length === admins.length) {
-    return m.reply('*⚠️ Solo hay administradores en este grupo.*');
-  }
+  // Elegir uno al azar
+  let elegido = users[Math.floor(Math.random() * users.length)]
 
-  const randomUser = eligibleUsers[Math.floor(Math.random() * eligibleUsers.length)];
-  let tag;
+  // Avisar al grupo
+  await conn.reply(m.chat, `🎡 La ruleta giró... y salió: @${elegido.split('@')[0]} 😈`, m, {
+    mentions: [elegido]
+  })
 
+  // Eliminar al usuario
   try {
-    tag = await conn.getName(randomUser.id);
+    await conn.groupParticipantsUpdate(m.chat, [elegido], 'remove')
   } catch (e) {
-    tag = randomUser.id.split('@')[0]; 
+    conn.reply(m.chat, 'No pude eliminar al usuario, revisa permisos ⚠️', m)
   }
+}
 
-  await conn.reply(m.chat, `*🔁 Ruleta aleatoria:*\n*\`${tag}\`*\n*Serás eliminado del grupo.*`, m);
-
-  try {
-    await conn.groupParticipantsUpdate(m.chat, [randomUser.id], 'remove');
-    await conn.reply(m.chat, `*🌵 \`${tag}\` fue eliminado con éxito.*`, m);
-    m.react('✅');
-  } catch (e) {
-    await conn.reply(m.chat, `*✖️ No se pudo eliminar a \`${tag}\`.`, m);
-    m.react('✖️');
-  }
-};
-
-handler.help = ['ruletaban'];
-handler.tags = ['grupos'];
-handler.command = /^(kickrandom|ruletaban|rban)$/i;
-handler.admin = true;
-handler.botAdmin = true;
-
-export default handler;
+handler.command = ['ruletaban','rban']
+handler.tags = ['grupos']
+handler.help = ['rban']
+export default handler
