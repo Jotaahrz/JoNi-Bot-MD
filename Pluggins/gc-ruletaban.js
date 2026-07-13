@@ -1,5 +1,5 @@
 let handler = async (m, { conn, participants }) => {
-  // Filtrar solo usuarios válidos (no el bot ni administradores si quieres)
+
   let users = participants.filter(p => !p.admin && p.id !== conn.user.jid).map(p => p.id)
 
   if (users.length === 0) {
